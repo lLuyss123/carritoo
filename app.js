@@ -1,7 +1,9 @@
 const productos = document.getElementById('productos');
+const items = document.getElementById('items');
 const fragment = document.createDocumentFragment();
 let carrito ={};
 const templateProductos = document.getElementById("template-productos").content;
+const templateItems = document.getElementById("template-items").content;
 
 
 
@@ -38,5 +40,24 @@ const llenarCarrito = item =>{
         cantidad:1
     }
 
-    carrito(producto.id)={...producto};
+    carrito[producto.id]={...producto};
+    pintarProductos();
+}
+
+const pintarProductos =() =>{
+    items.innerHTML='';
+    Object.values(carrito).forEach(producto =>{
+        templateItems.querySelector('th').textContent=producto.id;
+        templateItems.querySelectorAll('td')[0].textContent=producto.titulo;
+        templateItems.querySelectorAll('td')[1].textContent=producto.cantidad;
+        templateItems.querySelector('span').textContent=producto.precio*producto.cantidad;
+
+        templateItems.querySelector('.btn-info').dataset.id=producto.id;
+        templateItems.querySelector('.btn-danger').dataset.id=producto.id;
+
+        const clone = templateItems.cloneNode(true);
+        fragment.appendChild(clone);
+
+    })
+    items.appendChild(fragment);
 }
