@@ -92,6 +92,7 @@ const pintarFooter = () =>{
 
     
 
+    
     const clone = templateFooter.cloneNode(true);
     fragment.appendChild(clone);
 
