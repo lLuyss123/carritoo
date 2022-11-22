@@ -33,7 +33,11 @@ const pintarCards = data =>{
 }
 
 const agregarCarrito = e =>{
-    llenarCarrito(e.target.parentElement);
+    if (e.target.classList.contains('btn-primary')) {
+        llenarCarrito(e.target.parentElement);
+    }
+    
+    
 }
 
 const llenarCarrito = item =>{
@@ -73,14 +77,12 @@ const pintarProductos =() =>{
 const pintarFooter = () =>{
     footer.innerHTML='';
 
-    if (Object.values(carrito).length==0) {
+    if (Object.values(carrito).length===0) {
         footer.innerHTML=`
         <th scope="row" colspan="5">No hay elementos en el Carrito</th>
         `
         return
     }
-
-
 
     const cantidad_productos = Object.values(carrito).reduce((acc,{cantidad}) => acc+cantidad,0);
     const valor_total = Object.values(carrito).reduce((acc,{cantidad,precio}) => acc+cantidad*precio,0);
@@ -88,15 +90,18 @@ const pintarFooter = () =>{
     templateFooter.querySelectorAll('td')[0].textContent=cantidad_productos;
     templateFooter.querySelectorAll('span')[0].textContent=valor_total;
 
-    const boton = document.getElementById('#vaciar-todo');
+    
+
+    const clone = templateFooter.cloneNode(true);
+    fragment.appendChild(clone);
+
+    footer.appendChild(fragment);
+
+    const boton = document.getElementById('vaciar-todo');
     boton.addEventListener('click',()=>{
         carrito={};
         pintarProductos();
     })
-
-    const clone = templateFooter.cloneNode(true);
-    fragment.appendChild(clone);
-    footer.appendChild(fragment);
 }
 
 const btnAgregarEliminarProductos = e =>{
@@ -110,7 +115,7 @@ const btnAgregarEliminarProductos = e =>{
     if (e.target.classList.contains('btn-danger')) {
         const producto=carrito[e.target.dataset.id];
         producto.cantidad--;
-        if (producto.cantidad==0) {
+        if (producto.cantidad===0) {
             delete carrito[e.target.dataset.id];
         }else{
             carrito[e.target.dataset.id]= {...producto};
