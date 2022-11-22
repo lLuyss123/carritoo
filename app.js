@@ -12,6 +12,8 @@ const templateFooter = document.getElementById("template-footer").content;
 document.addEventListener('DOMContentLoaded', e => {fetchData()});
 productos.addEventListener('click',e =>{agregarCarrito(e)});
 
+items.addEventListener('click',e =>{btnAgregarEliminarProductos(e)});
+
 const fetchData = async () =>{
     const res = await fetch('api.json');
     const data = await res.json();
@@ -71,6 +73,15 @@ const pintarProductos =() =>{
 const pintarFooter = () =>{
     footer.innerHTML='';
 
+    if (Object.values(carrito).length==0) {
+        footer.innerHTML=`
+        <th scope="row" colspan="5">No hay elementos en el Carrito</th>
+        `
+        return
+    }
+
+
+
     const cantidad_productos = Object.values(carrito).reduce((acc,{cantidad}) => acc+cantidad,0);
     const valor_total = Object.values(carrito).reduce((acc,{cantidad,precio}) => acc+cantidad*precio,0);
 
@@ -86,4 +97,27 @@ const pintarFooter = () =>{
     const clone = templateFooter.cloneNode(true);
     fragment.appendChild(clone);
     footer.appendChild(fragment);
+}
+
+const btnAgregarEliminarProductos = e =>{
+    if (e.target.classList.contains('btn-info')) {
+        const producto=carrito[e.target.dataset.id];
+        producto.cantidad++;
+        carrito[e.target.dataset.id]= {...producto};
+        pintarProductos();
+    }
+
+    if (e.target.classList.contains('btn-danger')) {
+        const producto=carrito[e.target.dataset.id];
+        producto.cantidad--;
+        if (producto.cantidad==0) {
+            delete carrito[e.target.dataset.id];
+        }else{
+            carrito[e.target.dataset.id]= {...producto};
+        
+
+        }
+        pintarProductos();
+        
+    }
 }
