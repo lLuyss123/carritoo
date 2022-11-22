@@ -1,9 +1,11 @@
 const productos = document.getElementById('productos');
 const items = document.getElementById('items');
+const footer = document.getElementById('footer');
 const fragment = document.createDocumentFragment();
 let carrito ={};
 const templateProductos = document.getElementById("template-productos").content;
 const templateItems = document.getElementById("template-items").content;
+const templateFooter = document.getElementById("template-footer").content;
 
 
 
@@ -19,7 +21,7 @@ const fetchData = async () =>{
 const pintarCards = data =>{
     data.forEach(item => {
         templateProductos.querySelector('h5').textContent=item.name;
-        templateProductos.querySelector('p').textContent="$"+item.precio;
+        templateProductos.querySelector('p').textContent=item.precio;
         templateProductos.querySelector('img').setAttribute("src", item.image);
         templateProductos.querySelector('button').dataset.id=item.id;
         const clone = templateProductos.cloneNode(true);
@@ -38,6 +40,9 @@ const llenarCarrito = item =>{
         precio: item.querySelector('p').textContent,
         titulo: item.querySelector('h5').textContent,
         cantidad:1
+    }
+    if (carrito.hasOwnProperty(producto.id)) {
+        producto.cantidad=carrito[producto.id].cantidad+1;
     }
 
     carrito[producto.id]={...producto};
@@ -60,4 +65,25 @@ const pintarProductos =() =>{
 
     })
     items.appendChild(fragment);
+    pintarFooter();
+}
+
+const pintarFooter = () =>{
+    footer.innerHTML='';
+
+    const cantidad_productos = Object.values(carrito).reduce((acc,{cantidad}) => acc+cantidad,0);
+    const valor_total = Object.values(carrito).reduce((acc,{cantidad,precio}) => acc+cantidad*precio,0);
+
+    templateFooter.querySelectorAll('td')[0].textContent=cantidad_productos;
+    templateFooter.querySelectorAll('span')[0].textContent=valor_total;
+
+    const boton = document.getElementById('#vaciar-todo');
+    boton.addEventListener('click',()=>{
+        carrito={};
+        pintarProductos();
+    })
+
+    const clone = templateFooter.cloneNode(true);
+    fragment.appendChild(clone);
+    footer.appendChild(fragment);
 }
